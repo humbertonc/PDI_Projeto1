@@ -79,4 +79,3 @@ def testa_q1(path):
     print(f'Errado: {errado}')
 
 testa_q1('babuino.png')
-#print(hsb_to_rgb(rgb_to_hsb([120,250,140])))

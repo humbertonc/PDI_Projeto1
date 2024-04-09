@@ -2,22 +2,22 @@ from PIL import Image
 
 def rgb_to_hsb(rgb):
     r,g,b = rgb
-    r /= 255
-    g /= 255
-    b /= 255
+    r /= 255.0
+    g /= 255.0
+    b /= 255.0
     max_val = max(r,g,b)
     min_val = min(r,g,b)
 
     if max_val == min_val:
         h = 0
     elif g == max_val:
-        h = 60*(b-r)/(max_val-min_val) + 120
+        h = (60*(b-r))/(max_val-min_val) + 120
     elif b == max_val:
-        h = 60*(r-g)/(max_val-min_val) + 240
+        h = (60*(r-g))/(max_val-min_val) + 240
     elif g >= b:
-        h = 60*(g-b)/(max_val-min_val)
+        h = (60*(g-b))/(max_val-min_val)
     else: #Quando R = MAX e G < B
-        h = 60*(g-b)/(max_val-min_val) + 360
+        h = (60*(g-b))/(max_val-min_val) + 360
 
     if max_val == 0:
         s = 0
@@ -53,8 +53,8 @@ def hsb_to_rgb(hsb):
         ret = [t,p,b]
     elif h1 == 5:
         ret = [b,p,q]
-
-    return [int(255*x) for x in ret]
+    
+    return [round(255*x) for x in ret]
 
 def testa_q3(path_1,path_2):
     img_giver = Image.open(path_1)
