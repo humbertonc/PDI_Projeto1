@@ -35,7 +35,6 @@ def hsb_to_rgb(hsb):
     sector_pos = h % 6
     h1 = int(sector_pos)
 
-    # get the fractional part of the sector
     f = sector_pos - h1
     p = b *(1-s)
     q = b * (1-f*s)
@@ -68,9 +67,10 @@ def testa_q1(path):
         for y in range(h):
             
             hsb = rgb_to_hsb(pixels[x, y])
-            new_pixel = hsb_to_rgb(hsb)
-
-            if new_pixel == list(pixels[x,y]):
+            novo_pixel = hsb_to_rgb(hsb)
+            
+            # Checa se pixel convertido é igual ao original
+            if novo_pixel == list(pixels[x,y]):
                 certo += 1
             else:
                 errado += 1
@@ -78,4 +78,7 @@ def testa_q1(path):
     print(f'Certo: {certo}')
     print(f'Errado: {errado}')
 
-testa_q1('babuino.png')
+if __name__ == '__main__':
+    testa_q1('imagens/babuino.png')
+    testa_q1('imagens/DancingInWater.jpg')
+    testa_q1('imagens/Shapes.png')
