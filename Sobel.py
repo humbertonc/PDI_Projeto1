@@ -23,32 +23,33 @@ def get_mask(archive_path):
         valores = [int(valor) for valor in linha.split()]
         mascara.append(valores)  
 
-    return mascara 
+    return mascara
 
 def expansao_histograma(img,r_max,r_min):
-    w, h = img.size
+    w = len(img[0])
+    h = len(img)
+
     image = Image.new("RGB", (w, h))
     print(r_min)
     print(r_max)
-    for x in range(w):
-        for y in range(h):
-            pixel = img.getpixel((x,y))[0]
-            resultado = round((pixel - r_min) / (r_max - r_min))
-            if resultado:
-                resultado = 255
 
-            image.putpixel((x, y), (resultado, resultado, resultado))
+    for y in range(w):
+        for x in range(h):
+            pixel = img[x][y]
+            resultado = round(((abs(pixel) - r_min)/ r_max) * 255)
+
+            image.putpixel((y, x), (resultado, resultado, resultado))
             
     return image
 
 
 def sobel_filter(img, mask):
     w, h = img.size
-    image = Image.new("RGB", (w, h))
+    image = [[0] * w for _ in range(h)]
+    imagem_processada = Image.new("RGB", (w, h))
     
     r_max = 0
-    r_min = 255
-
+    r_min = 10000000
 
     for x in range(1, w-1):
         for y in range(1, h-1):
@@ -57,21 +58,15 @@ def sobel_filter(img, mask):
                 for j in range(len(mask)):
                     gx+= mask[i][j]* img.getpixel((x+i-1,y+j-1))[0]
 
-            image.putpixel((x, y), (gx, gx, gx))
-            if gx > r_max:
-                if gx > 255:
-                    r_max = 255
-                else:
-                    r_max = gx
-            elif gx < r_min:
-                if gx < 0:
-                    r_min = 0
-                else:
-                    r_min = gx
+            image[y][x] = gx
+            if abs(gx) > r_max:
+                r_max = abs(gx)
+            elif abs(gx) < r_min:
+                r_min = abs(gx)
 
-    image = expansao_histograma(image,r_max,r_min)
+    imagem_processada = expansao_histograma(image,r_max,r_min)
 
-    return image
+    return imagem_processada
 
 def sobel_sum(sobel_v, sobel_h):
     w, h = sobel_v.size
@@ -80,18 +75,14 @@ def sobel_sum(sobel_v, sobel_h):
         for y in range(h):
             pixel_sv = sobel_v.getpixel((x,y))[0]
             pixel_sh = sobel_h.getpixel((x,y))[0]
-            if pixel_sv:
+            if pixel_sv > pixel_sh:
                 image.putpixel((x, y), (pixel_sv, pixel_sv, pixel_sv))
-            elif pixel_sh:
+            else:
                 image.putpixel((x, y), (pixel_sh, pixel_sh, pixel_sh))
-            else :
-                image.putpixel((x, y), (0, 0, 0))
-    return image
-
-
+    return image 
 
 if __name__ == "__main__":
-    #img_original = Image.open("DancingInWater.jpg")
+    # img_original = Image.open("DancingInWater.jpg")
     img_original = Image.open("Shapes.png")
     img_gray = grayscale(img_original)
 

@@ -8,7 +8,7 @@ def get_mask(archive_path):
     mascara = []
     for linha in linhas:
         # Dividir a linha nos espaços em branco e converter os valores para inteiros
-        valores = [int(valor) for valor in linha.split()]
+        valores = [float(valor) for valor in linha.split()]
         mascara.append(valores)  
 
     return mascara 
@@ -16,25 +16,20 @@ def get_mask(archive_path):
 def gaussian_filter(img, mask):
     w, h = img.size
     image = Image.new("RGB", (w, h))
-    kernel = [[0]*len(mask[0]) for _ in range(len(mask))]
     linhas_k = len(mask)
     colunas_k = len(mask[0])
 
-    for i in range(colunas_k):
-        for j in range(linhas_k):
-            kernel[i][j] = mask[i][j]/256
-
-    for x in range(2, w-2):
-        print(x)
-        for y in range(2, h-2):
+    middle = linhas_k//2
+    for x in range(middle, w-middle):
+        for y in range(middle, h-middle):
             gr = 0
             gg = 0
             gb = 0
             for i in range(colunas_k):
                 for j in range(linhas_k):
-                    gr+= float(kernel[i][j]* img.getpixel((x+i-2,y+j-2))[0])
-                    gg+= float(kernel[i][j]* img.getpixel((x+i-2,y+j-2))[1])
-                    gb+= float(kernel[i][j]* img.getpixel((x+i-2,y+j-2))[2])
+                    gr+= float(mask[i][j]* img.getpixel((x+i-middle,y+j-middle))[0])
+                    gg+= float(mask[i][j]* img.getpixel((x+i-middle,y+j-middle))[1])
+                    gb+= float(mask[i][j]* img.getpixel((x+i-middle,y+j-middle))[2])
 
             image.putpixel((x, y), (int(gr), int(gg), int(gb)))
             
@@ -45,14 +40,8 @@ def box_filter(img, mask):
     image = Image.new("RGB", (w, h))
     print(w)
     print(h)
-    kernel = [[0]*len(mask[0]) for _ in range(len(mask))]
     linhas_k = len(mask)
     colunas_k = len(mask[0])
-    n_elementos = linhas_k*colunas_k
-
-    for i in range(linhas_k):
-        for j in range(colunas_k):
-            kernel[i][j] = mask[i][j]/n_elementos
 
     offset_colunas = colunas_k // 2
     if colunas_k % 2:
@@ -70,7 +59,6 @@ def box_filter(img, mask):
     print(offset_colunas)
 
     for x in range(offset_linhas-paridade_linhas, h-offset_linhas):
-        print(x)
         for y in range(offset_colunas-paridade_colunas, w-offset_colunas):
             
             gr = 0
@@ -78,10 +66,9 @@ def box_filter(img, mask):
             gb = 0
             for i in range(linhas_k):
                 for j in range(colunas_k):
-                    # print(y+j-12)
-                    gr+= float(kernel[i][j]* img.getpixel((y+j-offset_colunas-paridade_colunas,x+i-offset_linhas-paridade_linhas))[0])
-                    gg+= float(kernel[i][j]* img.getpixel((y+j-offset_colunas-paridade_colunas,x+i-offset_linhas-paridade_linhas))[1])
-                    gb+= float(kernel[i][j]* img.getpixel((y+j-offset_colunas-paridade_colunas,x+i-offset_linhas-paridade_linhas))[2])
+                    gr+= float(mask[i][j]* img.getpixel((y+j-offset_colunas-paridade_colunas,x+i-offset_linhas-paridade_linhas))[0])
+                    gg+= float(mask[i][j]* img.getpixel((y+j-offset_colunas-paridade_colunas,x+i-offset_linhas-paridade_linhas))[1])
+                    gb+= float(mask[i][j]* img.getpixel((y+j-offset_colunas-paridade_colunas,x+i-offset_linhas-paridade_linhas))[2])
 
             image.putpixel((y, x), (int(gr), int(gg), int(gb)))
             
@@ -94,10 +81,10 @@ if __name__ == "__main__":
     img_original = Image.open("Shapes.png")
 
     # Processar as linhas para criar a matriz
-    # gaussiano_caminho = 'gaussiano_5x5.txt'
-    # mascara_gaussiano = []
-    # mascara_gaussiano = get_mask(gaussiano_caminho)
-    # imagem_filtrada_gau = gaussian_filter(img_original,mascara_gaussiano)
+    gaussiano_caminho = 'gaussiano_5x5.txt'
+    mascara_gaussiano = []
+    mascara_gaussiano = get_mask(gaussiano_caminho)
+    imagem_filtrada_gau = gaussian_filter(img_original,mascara_gaussiano)
 
      # Processar as linhas para criar a matriz
     box_caminho = 'media_1x26.txt'
@@ -107,4 +94,4 @@ if __name__ == "__main__":
 
 
     imagem_filtrada_box.show()
-    # imagem_filtrada_gau.show()
+    imagem_filtrada_gau.show()
