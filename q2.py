@@ -61,12 +61,12 @@ def mult_ad_filter(ad_m, mult_s, mult_b):
     img = Image.open('DancingInWater.jpg')
     width, height = img.size
 
-    img_hsv = []
+    img_hsb = []
     new_img = []
 
     img_rgb = Image.new("RGB", (width, height))
 
-    # Transformar a imagem de RGB para HSV
+    # Transformar a imagem de RGB para HSB
     for y in range(height):
         row = []
 
@@ -75,7 +75,7 @@ def mult_ad_filter(ad_m, mult_s, mult_b):
             new_pxl = rgb_to_hsb(pxl)
             row.append(new_pxl)
 
-        img_hsv.append(row)
+        img_hsb.append(row)
 
 
     # Aplicar o filtro
@@ -83,7 +83,7 @@ def mult_ad_filter(ad_m, mult_s, mult_b):
         row = []
 
         for x in range(width):
-            pxl = img_hsv[y][x]
+            pxl = img_hsb[y][x]
 
             if (pxl[0] + ad_m) <= 255:
                 h = int(pxl[0] + ad_m)
@@ -105,7 +105,7 @@ def mult_ad_filter(ad_m, mult_s, mult_b):
 
         new_img.append(row)
 
-    # Transformar a imagem de HSV em RGB
+    # Transformar a imagem de HSB em RGB
     for y in range(height):
         for x in range(width):
             pxl = new_img[y][x]
